@@ -90,6 +90,7 @@ extern int sys_exit(void);
 extern int sys_fork(void);
 extern int sys_fstat(void);
 extern int sys_getpid(void);
+extern int sys_getprocs(void);
 extern int sys_kill(void);
 extern int sys_link(void);
 extern int sys_mkdir(void);
