@@ -14,7 +14,7 @@ main()
     printf(2, "big: cannot open big.file for writing\n");
     exit();
   }
-
+  
   sectors = 0;
   while(1){
     *(int*)buf = sectors;
