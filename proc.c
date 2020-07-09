@@ -267,6 +267,22 @@ exit(void)
   panic("zombie exit");
 }
 
+int
+getprocs(void)
+{
+ struct proc *p;
+ int c = 0;
+ acquire(&ptable.lock);
+ for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+   if(p->state == RUNNABLE || p->state == RUNNING || p->state == SLEEPING){  //p->state == RUNNABLE || p->state == RUNNING || p->state == SLEEPING
+     c = c + 1;
+   }
+ }
+ release(&ptable.lock);
+ return c;
+}
+
+
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
 int
@@ -325,11 +341,9 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
   for(;;){
     // Enable interrupts on this processor.
     sti();
-
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -346,8 +360,7 @@ scheduler(void)
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
+      // Process is done running for now. // It should have changed its p->state before coming back.
       c->proc = 0;
     }
     release(&ptable.lock);
