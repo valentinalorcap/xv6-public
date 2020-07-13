@@ -500,9 +500,7 @@ uint
 addresstranslate(const void *addr)
 {
   int physical_address;
-  pde_t *pgdir,*pgtab,*pde;
-
-  //must initialise pgdir
+  pde_t *pgdir, *pgtab,*pde;
 
   pde = &pgdir[PDX(addr)];
   if(*pde & PTE_P){

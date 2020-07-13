@@ -99,7 +99,7 @@ sys_uptime(void)
 uint
 sys_addresstranslate(const void *addr)
 {
-  argstr(0, &s);
-  addr_translate(s);
-  return s;
+  argstr(0, &addr);
+  addresstranslate(addr);
+  return addr;
 }
