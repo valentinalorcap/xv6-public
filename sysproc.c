@@ -95,3 +95,11 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint
+sys_addresstranslate(const void *addr)
+{
+  argstr(0, &s);
+  addr_translate(s);
+  return s;
+}

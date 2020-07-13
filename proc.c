@@ -496,6 +496,31 @@ kill(int pid)
   return -1;
 }
 
+uint
+addresstranslate(const void *addr)
+{
+  int physical_address;
+  pde_t *pgdir,*pgtab,*pde;
+
+  //must initialise pgdir
+
+  pde = &pgdir[PDX(addr)];
+  if(*pde & PTE_P){
+    pgtab = (pte_t*)P2V(PTE_ADDR(*pde));
+  }
+  else
+  {
+    cprintf("\n Invalid Virtual address \n");
+    return -1;
+  }
+
+  pte_t *pte;
+  pte = &pgtab[PTX(addr)];
+  physical_address=PTE_ADDR(*pte);
+
+  return physical_address;
+}
+
 //PAGEBREAK: 36
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
