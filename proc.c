@@ -499,6 +499,7 @@ kill(int pid)
 uint
 addresstranslate(const void *addr)
 {
+  uint offset = (uint)addr & 0xFFF;
   int physical_address;
   pde_t *pgdir, *pgtab,*pde;
 
@@ -516,7 +517,7 @@ addresstranslate(const void *addr)
   pte = &pgtab[PTX(addr)];
   physical_address=PTE_ADDR(*pte);
 
-  return physical_address;
+  return physical_address | offset;
 }
 
 //PAGEBREAK: 36
