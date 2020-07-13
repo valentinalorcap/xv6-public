@@ -496,12 +496,49 @@ kill(int pid)
   return -1;
 }
 
+/*int
+addresstranslate(const void *va)
+{
+  int physicalAddress;
+  pde_t *pde;
+  pte_t *pgtab;
+  //pde_t *pgdir;
+  
+  struct proc *p;
+  p = ptable.proc;
+
+  //Get the pg directory
+  pde_t *pgdir = p->pgdir;
+
+  //memset(pgdir, 0, PGSIZE);
+  //pgdir = (pde_t*)cpu->ts.cr3;
+  //uint offset = (uint)va & 0xFFF;
+  pde = &pgdir[PDX(va)];
+  if(*pde & PTE_P){
+  pgtab = (pte_t*)P2V(PTE_ADDR(*pde));
+  }else{
+    cprintf("pte not present\n");
+    return -1;
+  }
+  pte_t *pte;
+  //pte = walkpgdir(pgdir, va, 0);
+  pte = &pgtab[PTX(va)];
+  physicalAddress = V2P(pte);
+
+  //return pde;
+  return physicalAddress;
+}*/
+
 uint
-addresstranslate(const void *addr)
+addresstranslate(uint addr)
 {
   uint offset = (uint)addr & 0xFFF;
+
+  struct proc *p = myproc();
+  pde_t *pgdir = p->pgdir;
+
   int physical_address;
-  pde_t *pgdir, *pgtab,*pde;
+  pde_t *pgtab,*pde;
 
   pde = &pgdir[PDX(addr)];
   if(*pde & PTE_P){

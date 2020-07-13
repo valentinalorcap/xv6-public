@@ -96,10 +96,12 @@ sys_uptime(void)
   return xticks;
 }
 
-uint
-sys_addresstranslate(const void *addr)
+int
+sys_addresstranslate(void)
 {
-  argstr(0, &addr);
-  addresstranslate(addr);
-  return addr;
+  int addr;
+  if(argint(0,&addr) < 0){
+    return -1;
+  }
+  return addresstranslate((void *)addr);
 }
