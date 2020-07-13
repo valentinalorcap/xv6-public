@@ -504,7 +504,7 @@ addresstranslate(const void *addr)
   struct proc *p = myproc();
   pde_t *pgdir = p->pgdir;
 
-  int physical_address;
+  uint physical_address;
   pde_t *pgtab,*pde;
 
   pde = &pgdir[PDX(addr)];
