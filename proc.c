@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "rand.h"
 
 struct {
   struct spinlock lock;
@@ -324,22 +325,36 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  c->proc = 0;
+  c->proc = 0;  // process running in cpu = null
   
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
+  int contador = 0;
+  int winner = 0;
+  int total_tickets = 0;
 
-    // Loop over process table looking for process to run.
+
+  for(;;){
+    sti(); // Enable interrupts on this processor.
     acquire(&ptable.lock);
+    contador = 0;
+    total_tickets = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state == RUNNABLE)
+        total_tickets = total_tickets + p->tickets;
+    }
+
+    winner = random_at_most(total_tickets);
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
+    
+      if ((contador + p->tickets) < winner)
+        contador += p->tickets;
+        continue;
+      
+      // It is the process's job to release ptable.lock and then reacquire it
       // before jumping back to us.
-      c->proc = p;
+      c->proc = p; // Switch to chosen process
       switchuvm(p);
       p->state = RUNNING;
 
