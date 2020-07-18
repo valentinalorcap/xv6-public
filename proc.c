@@ -25,6 +25,7 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
+  sgenrand(unixtime());
 }
 
 // Must be called with interrupts disabled
@@ -328,20 +329,20 @@ scheduler(void)
   c->proc = 0;  // process running in cpu = null
   
   int contador = 0;
-  int winner = 0;
+  long winner = 0;
   int total_tickets = 0;
 
 
   for(;;){
     sti(); // Enable interrupts on this processor.
     acquire(&ptable.lock);
+    winner = 0;
     contador = 0;
     total_tickets = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state == RUNNABLE)
         total_tickets = total_tickets + p->tickets;
     }
-
     winner = random_at_most(total_tickets);
 
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -352,6 +353,8 @@ scheduler(void)
         contador += p->tickets;
         continue;
       
+      cprintf("proceso ganador: %s", p->name);
+
       // It is the process's job to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p; // Switch to chosen process
@@ -364,6 +367,7 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+      break;
     }
     release(&ptable.lock);
 

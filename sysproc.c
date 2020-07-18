@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "rand.h"
 
 int
 sys_fork(void)
@@ -45,7 +46,7 @@ sys_getpid(void)
 int
 sys_getprocs(void)
 {
-  return myproc();
+  return myproc()->pid;
 }
 
 int
@@ -95,3 +96,17 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int
+sys_settickets(void)
+{
+  int no_tickets;
+  
+  if(argint(0, &no_tickets) < 0)
+    myproc()->tickets = 10;
+  else
+    myproc()->tickets = no_tickets;
+  return 0;
+}
+
+
